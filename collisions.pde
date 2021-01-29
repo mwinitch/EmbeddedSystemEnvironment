@@ -1,36 +1,53 @@
-
+// Variables used throughout the visualization keeping track of all the balls, colors, and timing
 ArrayList<Ball> balls = new ArrayList<Ball>();
 int begin = millis();
+int backgroundRed = 255;
+int backgroundGreen = 255;
+int backgroundBlue = 255;
 
-
+// Setup functions that makes the visual full screen and initializes with two empty new balls
 void setup() {
   fullScreen();
   balls.add(new Ball(100, 400, 20));
   balls.add(new Ball(700, 400, 80));
 }
 
+// Function that does the animating
 void draw() {
-  background(250, 242, 255);
-
+  
+  // Update background colors
+  background(backgroundRed, backgroundGreen, backgroundBlue);
+  
+  // Go through each ball and update its movement and color changes
   for (Ball b : balls) {
     b.update();
     b.display();
     b.checkBoundaryCollision();
   }
   
-  
-  int current = millis();
-  if (millis()> begin + 10000) {
+  // Every 5 seconds this code will generate a new ball to be added
+  if (millis() > begin + 5000) {
     begin = millis();
     int radius = int(random(20, 80));
     balls.add(new Ball(700, 400, radius));
+    
+    // If there are already twenty balls on screen set back to two balls
+    if (balls.size() > 20) {
+      balls = new ArrayList<Ball>();
+      balls.add(new Ball(100, 400, 20));
+      balls.add(new Ball(700, 400, 80));
+    }
+    
+    // Update the background color depending on the current amount of balls on the screen
+    backgroundRed = int(map(balls.size(), 2, 20, 255, 0));
+    backgroundGreen = int(map(balls.size(), 2, 20, 255, 154)); 
   }
   
 }
 
 
 
-
+// Class representing each ball
 class Ball {
   PVector position;
   PVector velocity;
@@ -68,6 +85,7 @@ class Ball {
   }
   
 
+  // Used to get the new RGB color of the balls if applicable
   int[] getColor() {
     int current = millis();
     int diff = ((current - start) / 1000) % 60;
